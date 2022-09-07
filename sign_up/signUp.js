@@ -19,14 +19,14 @@ signUp.addEventListener('click',(e)=> {
         axios.post(`http://localhost:4000/signup`,obj)
         .then(res =>{
             if(res.data.msg){
-                console.log('this email is already exists');
+                window.alert('User already exists, Please Login')
             }else{
-                console.log('succesfully created your account');
+                window.alert('Successfuly signed up')
             }
         })
         .catch(err => console.log(err));
     }else{
-        console.log('please enter all fields');
+        window.alert('please enter all fields')
     }
     
     
