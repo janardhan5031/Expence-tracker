@@ -11,7 +11,7 @@
 <body>
     <div class="body">
         <div class="sign_up_container">
-            <form action="">
+            <form action="" method="post">
                 <div class="name_container">
                     <label for="name"><p>Name</p></label>
                     <input type="text" id="name" name="name">
@@ -28,11 +28,12 @@
                     <label for="password"><p>password</p></label>
                     <input type="password" id="password" name="password">
                 </div>
-                <div class="signUp_container">
+                <div class="signUp_container" id="sign_up">
                     <button type="submit">Sign UP</button>
                 </div>
             </form>
         </div>
-    </div>
+    </div>  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
 </body>
 </html>
