@@ -11,17 +11,18 @@ signUp.addEventListener('click',(e)=> {
     const obj = {
         name:name,
         number:number,
-        email:email,
+        mail:email,
         password:password
     };
 
     if(name && number && email && password){
         axios.post(`http://localhost:4000/signup`,obj)
         .then(res =>{
+            console.log(res)
             if(res.data.msg){
-                window.alert('User already exists, Please Login')
+                window.alert(res.data.msg)
             }else{
-                window.alert('Successfuly signed up')
+                window.alert('unable to create new user')
             }
         })
         .catch(err => console.log(err));
