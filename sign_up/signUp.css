@@ -26,7 +26,9 @@ body{
     margin-top: 5rem;
     padding: 2rem 0;
     display: flex;
-    justify-content: center;    
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center;   
 }
 form{
     width: 60%;
@@ -60,4 +62,19 @@ button:hover{
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.signInContainer{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin: 0.3rem 0;
+}
+.signInContainer a{
+    margin: 0 1rem;
+    padding: 0.5rem;
+    background-color: blueviolet;
+    border-radius: 0.5rem;
+    color: white;
+    text-decoration: none;
 }

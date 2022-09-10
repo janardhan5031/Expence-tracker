@@ -9,8 +9,9 @@
     <script src="./sign_in.js" defer></script>
 </head>
 <body>
-    <div class="body">
-        <div class="sign_up_container">
+    
+    <div class="sign_in_container" id="sign_in_container">
+        <div class="inner_div">
             <form action="" method="post">
                 <div class="email_container">
                     <label for="email"><p>email</p></label>
@@ -20,7 +21,7 @@
                     <label for="password"><p>password</p></label>
                     <input type="password" id="password" name="password">
                 </div>
-                <div class="sign_in_container">
+                <div class="sign_in_btn">
                     <button type="submit" id="sign_in">sign in</button>
                 </div>
             </form>
@@ -28,10 +29,69 @@
             <div class="container2">
                 <a href="../sign_up/signUp.html">sign up</a>
                 <a href="">forget password</a>
-            </div>
-                
+            </div>  
         </div>
-    </div>  
+    </div>
+    
+    
+    <!-- user inter profile -->
+    <div class="profile_container" id="profile_container">
+        <header>
+            <div class="expense_tracker">
+                <button id="daily_btn">DAILY</button>
+                <button id="monthly_btn">MONTHLY</button>
+                <button id="yearly_btn">YEARLY</button>
+                <button id="add_expense">Add Expense</button>
+            </div>
+            <div class="main_header">
+                <p>EXPENSE TRACKER</p>
+            </div>
+            <div class="profile">
+                <div class="profile_pic">
+                    <img src="https://images.pexels.com/photos/1741205/pexels-photo-1741205.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" alt="">
+                </div>
+            </div>
+        </header>
+
+        <!-- daily expenses tracker -->
+        <!--div class="expenses_main_container" id="expenses_main_container">
+            <div class="daily_expenses_container">
+                <div class="expenses_header">Expenses</div>
+                <div class="expenses_container">
+                    <div class="expense">
+                        <p>event</p>
+                        <p>price</p>
+                    </div>
+                    <div class="expense">
+                        <p>event</p>
+                        <p>price</p>
+                    </div>
+                </div>
+            </div>
+            <div class="income_container">
+    
+            </div>
+        </div-->
+
+        <!-- adding daily expenses -->        
+        <div class="adding_expenses">
+            <div class="add_expenses">
+                <form action="">
+                    <div>
+                        <label for="event">Event</label>
+                        <input type="text" id="event" name="event">
+                    </div>
+                    <div>
+                        <label for="price">price</label>
+                        <input type="text" id="price" name="price">
+                    </div>  
+                    <div class="div1">
+                        <button type="submit" id="add_expenses_btn">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>  
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
 </body>
 </html>
