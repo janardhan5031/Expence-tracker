@@ -22,6 +22,12 @@ function displaycontent(){
         if(profile_container.classList.contains('active')){
             profile_container.classList.remove('active')
         }
+
+        const membeship = localStorage.getItem('membership');
+        console.log(membeship);
+        if(membeship){
+            profile_container.style.backgroundColor = "rgba(0,0,0,0.2)"
+        }
     }
 }
 
@@ -49,6 +55,8 @@ sign_in.addEventListener('click', (e) =>{
                 window.alert(result.data.msg);
                 // store the token in the local storage for further refences
                 localStorage.setItem('token',result.data.token);
+                localStorage.setItem('membership',result.data.membership);
+
                 displaycontent();
             }
         }).catch(err => console.log(err));  
