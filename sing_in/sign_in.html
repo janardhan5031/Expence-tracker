@@ -37,7 +37,7 @@
     <!-- user inter profile -->
     <div class="profile_container" id="profile_container">
         <header>
-            <div class="expense_tracker">
+            <div class="expense_tracker" id="expense_tracker">
                 <button id="daily_btn">DAILY</button>
                 <button id="monthly_btn">MONTHLY</button>
                 <button id="yearly_btn">YEARLY</button>
@@ -55,27 +55,24 @@
         </header>
 
         <!-- daily expenses tracker -->
-        <!--div class="expenses_main_container" id="expenses_main_container">
+        <div class="expenses_main_container" id="expenses_main_container">
             <div class="daily_expenses_container">
                 <div class="expenses_header">Expenses</div>
-                <div class="expenses_container">
-                    <div class="expense">
+                <div class="expenses_container" id="expenses_container">
+                    <!--div class="expense" >
                         <p>event</p>
                         <p>price</p>
-                    </div>
-                    <div class="expense">
-                        <p>event</p>
-                        <p>price</p>
-                    </div>
+                    </div-->
+                   
                 </div>
             </div>
             <div class="income_container">
     
             </div>
-        </div-->
+        </div>
 
         <!-- adding daily expenses -->        
-        <div class="adding_expenses">
+        <div class="adding_expenses" id="adding_expenses">
             <div class="add_expenses">
                 <form action="">
                     <div>
@@ -92,6 +89,9 @@
                 </form>
             </div>
         </div>  
+
+        
+
     </div>  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>

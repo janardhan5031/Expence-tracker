@@ -19,16 +19,81 @@ function displaycontent(){
             sign_in_container.classList.remove('active')
         }
         // displays the profile container   
-        if(profile_container.classList.contains('active')){
-            profile_container.classList.remove('active')
+        if(profile_container.classList.contains('active' )){
+            profile_container.classList.remove('active')    
         }
+         
+        const membership = JSON.parse(localStorage.getItem('membership'));          
+        const color = membership? "rgba(0,0,0,0.2)" : "white";
+        profile_container.style.backgroundColor = color;
 
-        const membeship = localStorage.getItem('membership');
-        console.log(membeship);
-        if(membeship){
-            profile_container.style.backgroundColor = "rgba(0,0,0,0.2)"
-        }
+        const expense_track_hdr = document.getElementById('expense_tracker');
+        expense_track_hdr.addEventListener('click',(event)=>{
+            //daily expenses
+            const expenses_main_container = document.getElementById('expenses_main_container').classList;
+            const adding_expenses = document.getElementById('adding_expenses').classList;
+
+            console.log(event.target.id)
+            // activate expenses main container and de-activate add expenses contaniner
+            if(event.target.id === 'daily_btn'){
+                expenses_main_container.add('active');
+                
+                if(adding_expenses.contains('active')){
+                    adding_expenses.remove('active');
+                }
+                display_daily_expenses();
+            }
+            // activate expenses add expenses container and de-activate expenses main contaniner
+            else if(event.target.id==='add_expense'){
+                if(expenses_main_container.contains('active')){
+                    expenses_main_container.remove('active');
+                }
+                adding_expenses.add('active');
+            }
+            
+        })
     }
+}
+
+function display_daily_expenses(){
+    // get all the expense events stored in database
+    const expenses_parent =document.getElementById('expenses_container');
+    expenses_parent.innerHTML ='';
+
+    const token = localStorage.getItem('token');
+    axios.get('http://localhost:4000/expenses/get-all',{headers:{"authorization":token}})
+    .then((expenses)=>{
+        console.log(expenses);
+        const list = expenses.data;
+        
+        list.forEach(expense =>{
+            const date = expense.createdAt.toString().slice(0,10);
+            //console.log(date);
+            const ele=`
+            <div class="expense" id=${expense.id}>
+                <p>${date}</p>
+                <p>${expense.event}</p>
+                <p>${expense.price}</p>
+            </div>`
+            expenses_parent.innerHTML += ele;
+        })
+
+        // on mouse over the element then show the delete button at right position
+        expenses_parent.addEventListener('mouseover', (event)=>{
+            if(event.target.className ==='expense'){
+                //console.log('jani');
+                const ele =` <button type="button">-</button>`
+                event.target.innerHTML+=ele;
+            }
+        })
+        expenses_parent.addEventListener('mouseout', (event)=>{
+            if(event.target.className ==='expense'){
+                event.target.removeChild(event.target.lastChild);
+            }
+        })
+
+    })
+    .catch(err => console.log(err));
 }
 
 
@@ -68,8 +133,9 @@ sign_in.addEventListener('click', (e) =>{
 // adding expenses
 document.getElementById('add_expenses_btn').addEventListener('click',(e)=>{
     e.preventDefault();
-    const event = document.getElementById('event').value;
-    const price = document.getElementById('price').value;
+   
+    let event = document.getElementById('event').value;
+    let price = document.getElementById('price').value;
 
     const obj = {
         event:event,
@@ -79,13 +145,15 @@ document.getElementById('add_expenses_btn').addEventListener('click',(e)=>{
     const token = localStorage.getItem('token');
     console.log(token)
     // send this data to backend
-    axios.post(`http://localhost:4000/add-expenses`,obj,{headers:{"authorization":token} })
+    axios.post(`http://localhost:4000/expenses/add`,obj,{headers:{"authorization":token} })
     .then(result =>{
         window.alert(result.data.msg)
     })
     .catch(err => console.log(err));
-    
 })
+
+// get all expenses
+
 
 // paying the money
 document.getElementById('pay_btn').onclick = async function(e){
