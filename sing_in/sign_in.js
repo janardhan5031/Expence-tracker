@@ -42,6 +42,7 @@ function displaycontent(){
                     adding_expenses.remove('active');
                 }
                 display_daily_expenses();
+                display_leadership_board();
             }
             // activate expenses add expenses container and de-activate expenses main contaniner
             else if(event.target.id==='add_expense'){
@@ -106,6 +107,30 @@ function display_daily_expenses(){
     .catch(err => console.log(err));
 }
 
+function display_leadership_board(){
+    const leadership_container = document.getElementById('leadership_container');
+    leadership_container.innerHTML='';
+    const token = localStorage.getItem('token');
+    axios.get('http://localhost:4000/getLeadership',{headers:{"authorization":token}})
+    .then((result)=>{
+        console.log(result);
+        const length = result.data.data.length;
+        result.data.data.forEach((user,index)=>{
+            const ele =`
+            <div class="members" id=${user.id}>
+                <p>${user.name}</p>
+                <p>${index+1}/${length}</p>
+            </div>`
+            leadership_container.innerHTML+= ele;
+            if(result.data.curUsr === user.id){
+                document.getElementById(user.id).style.border =' 1px solid rebeccapurple'
+            }
+        })
+        
+    })
+    .catch(err =>console.log(err));
+
+}
 
 
 //document.getElementById('expenses_main_container').classList.add('active');

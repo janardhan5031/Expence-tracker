@@ -139,13 +139,13 @@ img{
 .expenses_main_container{
     display: none;
 }
-.daily_expenses_container{
+.daily_expenses_container , .leadership_board{
     background-color: white;
     width: 48%;
     border: 1px solid aqua;
     border-radius: 2rem;
 }
-.expenses_header{
+.expenses_header,.leadership_header{
     /*background-color: aqua;*/
     background: aqua;
     border-bottom: 1px solid aqua;
@@ -157,14 +157,17 @@ img{
     padding: 0.5rem 0;
     font-size: large;
 }
-.expense{
+.expenses_container, .leadership_container{
+    margin: 1rem 0;
+}
+.expense, .members{
     /*border: 1px solid red ;   */
     display: flex;
     justify-content: space-between;
     margin: 1rem ;
     margin-bottom: 0;
 }
-.expense p{
+.expense p,.members p{
     margin: 0;
     padding: 0;
 }
