@@ -1,6 +1,4 @@
 
-
-
 window.addEventListener('DOMContentLoaded',displaycontent());
 
 function displaycontent(){
@@ -23,11 +21,13 @@ function displaycontent(){
             profile_container.classList.remove('active')    
         }
          
+        // change the background color for premium users
         const membership = JSON.parse(localStorage.getItem('membership'));          
         const color = membership? "rgba(0,0,0,0.2)" : "white";
         profile_container.style.backgroundColor = color;
 
         const expense_track_hdr = document.getElementById('expense_tracker');
+
         expense_track_hdr.addEventListener('click',(event)=>{
             //daily expenses
             const expenses_main_container = document.getElementById('expenses_main_container').classList;
@@ -74,24 +74,34 @@ function display_daily_expenses(){
                 <p>${date}</p>
                 <p>${expense.event}</p>
                 <p>${expense.price}</p>
+                <button type="button" id="remove">-</button>
             </div>`
             expenses_parent.innerHTML += ele;
         })
 
         // on mouse over the element then show the delete button at right position
-        expenses_parent.addEventListener('mouseover', (event)=>{
-            if(event.target.className ==='expense'){
-                //console.log('jani');
-                const ele =` <button type="button">-</button>`
-                event.target.innerHTML+=ele;
-            }
-        })
-        expenses_parent.addEventListener('mouseout', (event)=>{
-            if(event.target.className ==='expense'){
-                event.target.removeChild(event.target.lastChild);
-            }
-        })
+        expenses_parent.addEventListener('click', (event)=>{
 
+           /* //adding delete btn dynamically by user
+            if( event.target.className === 'expense'){
+                //console.log('jani');
+                const ele =` <button type="button" class="remove">-</button>`
+                event.target.innerHTML+=ele;
+                setTimeout(()=>{
+                    event.target.removeChild(event.target.lastChild);
+                },2000)
+            }
+            //event.preventDefault();*/
+
+            //removing the element by click on delete button
+            if(event.target.id==='remove' && event.target.parentElement.parentElement){
+                const elementId = event.target.parentElement.id;
+                //console.log(elementId);
+                deleteExpense(elementId);
+
+                expenses_parent.removeChild(event.target.parentElement);
+            }
+        })
     })
     .catch(err => console.log(err));
 }
@@ -152,7 +162,17 @@ document.getElementById('add_expenses_btn').addEventListener('click',(e)=>{
     .catch(err => console.log(err));
 })
 
-// get all expenses
+// delete expenses from server
+async function deleteExpense(id){
+    const token = localStorage.getItem('token');
+    await axios.post(`http://localhost:4000/expenses/delete`,{id:id},{headers:{"authorization":token} })
+    .then(result=>{
+        //console.log(result);
+    })
+    .catch(err => console.log(err));
+}
+
+
 
 
 // paying the money
