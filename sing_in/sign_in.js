@@ -1,5 +1,5 @@
 
-
+// user sign in action
 const sign_in = document.getElementById('sign_in');
 
 sign_in.addEventListener('click', (e) =>{
@@ -31,6 +31,9 @@ sign_in.addEventListener('click', (e) =>{
     }
 })
 
+// user forget password action
+
+
 // dom content loaded
 window.addEventListener('DOMContentLoaded',displaycontent());
 
@@ -44,6 +47,18 @@ function displaycontent(){
     if(!token){
         profile_container.classList.add('active')// remove this container
         sign_in_container.classList.add('active');
+        // user clicked on forget password, deactivate -sign in  & activate forget password containers
+        const forget_pswd = document.getElementById('signIn_frgt_btn');
+        forget_pswd.addEventListener('click',(e)=>{
+            console.log(forget_pswd)
+            e.preventDefault();
+
+            // de-activate sign in container
+            sign_in_container.classList.remove('active');
+            //activate forget-password container
+            console.log(document.getElementById('forget_pswd_container'))
+            document.getElementById('forget_pswd_container').classList.add('active');
+        })
     }
     else{
         if(sign_in_container.classList.contains('active')){

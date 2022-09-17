@@ -9,6 +9,7 @@ body{
     align-items: center;
 }
 
+
 /* sign in container */
 .sign_in_container{
     position: relative;
@@ -33,7 +34,7 @@ input{
     height: 0.8rem;
     outline-style: none;
 }
-#sign_in, .container2 a{
+#sign_in, .container2 *,#forget_pswd{
     cursor: pointer;
     background-color: rebeccapurple;
     border-radius: 2px;
@@ -56,8 +57,29 @@ input{
     display: flex;
     justify-content: space-between;
 }
-.container2 a{
+.container2 *{
     padding: 3px 6px;
+}
+
+/* forget password container */
+.forget_pswd_container.active{
+display: flex;
+}
+.forget_pswd_container{
+    position: relative;
+    top: 5rem;
+    box-shadow: 1px 1.5px 8px white;
+    background-color: rgba(0, 0, 0, 0.432);
+    border-radius: 2rem;
+    width: 50%;
+    color: white;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 0;
+}
+.forget_pswd_container form{
+    margin-bottom: 2rem;
 }
 
 /* profile container */
