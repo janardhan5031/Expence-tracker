@@ -1,4 +1,37 @@
 
+
+const sign_in = document.getElementById('sign_in');
+
+sign_in.addEventListener('click', (e) =>{
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    console.log('cllicked');
+    const obj ={
+        mail:email,
+        password:password
+    }
+    
+    if(email && password){
+        console.log(obj)
+        axios.post(`http://localhost:4000/sign-in`,obj)   // if we try to send the obj through get, we need to stringify that obj. then only we can parse that object and use it.
+        .then(result =>{
+            if(result.data.msg){
+                console.log(result);
+                window.alert(result.data.msg);
+                // store the token in the local storage for further refences
+                localStorage.setItem('token',result.data.token);
+                localStorage.setItem('membership',result.data.membership);
+
+                displaycontent();
+            }
+        }).catch(err => console.log(err));  
+    }else{
+        window.alert('pls check your credentials');
+    }
+})
+
+// dom content loaded
 window.addEventListener('DOMContentLoaded',displaycontent());
 
 function displaycontent(){
@@ -33,7 +66,7 @@ function displaycontent(){
             const expenses_main_container = document.getElementById('expenses_main_container').classList;
             const adding_expenses = document.getElementById('adding_expenses').classList;
 
-            console.log(event.target.id)
+            //console.log(event.target.id)
             // activate expenses main container and de-activate add expenses contaniner
             if(event.target.id === 'daily_btn'){
                 expenses_main_container.add('active');
@@ -64,7 +97,7 @@ function display_daily_expenses(){
     const token = localStorage.getItem('token');
     axios.get('http://localhost:4000/expenses/get-all',{headers:{"authorization":token}})
     .then((expenses)=>{
-        console.log(expenses);
+        //console.log(expenses);
         const list = expenses.data;
         
         list.forEach(expense =>{
@@ -107,18 +140,20 @@ function display_daily_expenses(){
     .catch(err => console.log(err));
 }
 
+// displaying the leadership board
 function display_leadership_board(){
     const leadership_container = document.getElementById('leadership_container');
     leadership_container.innerHTML='';
     const token = localStorage.getItem('token');
     axios.get('http://localhost:4000/getLeadership',{headers:{"authorization":token}})
     .then((result)=>{
-        console.log(result);
+        //console.log(result);
         const length = result.data.data.length;
         result.data.data.forEach((user,index)=>{
             const ele =`
             <div class="members" id=${user.id}>
                 <p>${user.name}</p>
+                <p id=${user.id}_expense></p>
                 <p>${index+1}/${length}</p>
             </div>`
             leadership_container.innerHTML+= ele;
@@ -132,38 +167,39 @@ function display_leadership_board(){
 
 }
 
+// showing other user's expenses for premium users only by click
+const all_users = document.getElementById('leadership_container');
+all_users.addEventListener('click',(event)=>{
 
-//document.getElementById('expenses_main_container').classList.add('active');
-const sign_in = document.getElementById('sign_in');
-
-sign_in.addEventListener('click', (e) =>{
-    e.preventDefault();
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    console.log('cllicked');
-    const obj ={
-        mail:email,
-        password:password
+    // if user is not premium user, then they will not allowed to see other user's expenses
+    if(JSON.parse(localStorage.getItem('membership')) === false){
+        return window.alert('sorry you are not premium use!');
     }
+
+    let target_ele;
+    // get the etire row element when click on entire ele or its child elements
+    if(event.target.className==='members'){
+        target_ele = event.target.id;
+    }else if(event.target.parentElement.className==='members'){
+        target_ele = event.target.parentElement.id;
+    }
+    //console.log(target_ele)
+    // get the expense child element in the target element found
+    const expense_ele = document.getElementById(`${target_ele}_expense`);
+
+    //get the selected user expense from backend
+    const token = localStorage.getItem('token');
+    axios.get(`http://localhost:4000/get_user/${target_ele}`,{headers:{"authorization":token}})
+    .then(result =>{
+        //console.log(result)
+        expense_ele.innerText=result.data.expense;
+        setTimeout(()=>{
+            expense_ele.innerText='';
+        },3000)
+    }).catch(err => console.log(err));
     
-    if(email && password){
-        console.log(obj)
-        axios.post(`http://localhost:4000/sign-in`,obj)   // if we try to send the obj through get, we need to stringify that obj. then only we can parse that object and use it.
-        .then(result =>{
-            if(result.data.msg){
-                console.log(result);
-                window.alert(result.data.msg);
-                // store the token in the local storage for further refences
-                localStorage.setItem('token',result.data.token);
-                localStorage.setItem('membership',result.data.membership);
-
-                displaycontent();
-            }
-        }).catch(err => console.log(err));  
-    }else{
-        window.alert('pls check your credentials');
-    }
 })
+
 
 // adding expenses
 document.getElementById('add_expenses_btn').addEventListener('click',(e)=>{
@@ -241,6 +277,8 @@ document.getElementById('pay_btn').onclick = async function(e){
             })
             .then(() =>{
                 window.alert('you are premium user now');
+                localStorage.removeItem('membership');
+                localStorage.setItem('membership',true);
             }).catch(err =>alert('something went wrong'));
         }
     }
