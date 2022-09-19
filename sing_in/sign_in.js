@@ -6,17 +6,17 @@ sign_in.addEventListener('click', (e) =>{
     e.preventDefault();
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
-    console.log('cllicked');
+    //console.log('cllicked');
     const obj ={
         mail:email,
         password:password
     }
     
     if(email && password){
-        console.log(obj)
+        //console.log(obj)
         axios.post(`http://localhost:4000/sign-in`,obj)   // if we try to send the obj through get, we need to stringify that obj. then only we can parse that object and use it.
         .then(result =>{
-            if(result.data.msg){
+            if(result.data.msg && result.status ===201){
                 console.log(result);
                 window.alert(result.data.msg);
                 // store the token in the local storage for further refences
@@ -24,6 +24,9 @@ sign_in.addEventListener('click', (e) =>{
                 localStorage.setItem('membership',result.data.membership);
 
                 displaycontent();
+            }
+            else{
+                window.alert(result.data.msg);
             }
         }).catch(err => console.log(err));  
     }else{
@@ -44,6 +47,7 @@ function displaycontent(){
 
     const sign_in_container = document.getElementById('sign_in_container');
 
+    // sign in action to get token to enter into their profile
     if(!token){
         profile_container.classList.add('active')// remove this container
         sign_in_container.classList.add('active');
@@ -58,6 +62,7 @@ function displaycontent(){
             //activate forget-password container
             console.log(document.getElementById('forget_pswd_container'))
             document.getElementById('forget_pswd_container').classList.add('active');
+            forgetPassword();
         })
     }
     else{
@@ -77,6 +82,7 @@ function displaycontent(){
         const expense_track_hdr = document.getElementById('expense_tracker');
 
         expense_track_hdr.addEventListener('click',(event)=>{
+
             //daily expenses
             const expenses_main_container = document.getElementById('expenses_main_container').classList;
             const adding_expenses = document.getElementById('adding_expenses').classList;
@@ -104,17 +110,44 @@ function displaycontent(){
     }
 }
 
+// forget password fucntion
+function forgetPassword(){
+    document.getElementById('forget_pswd').addEventListener('click',(e)=>{
+        e.preventDefault();
+        const email = document.getElementById('rcvry_email').value;
+        axios.post('http://localhost:4000/password/forgetpassword',{email:email})
+        .then((result)=>{
+            console.log('forget clicked')
+            console.log(result)
+        })
+        .catch(err => console.log(err));
+    })
+}
+
 function display_daily_expenses(){
     // get all the expense events stored in database
     const expenses_parent =document.getElementById('expenses_container');
-    expenses_parent.innerHTML ='';
+
+    const prev = document.getElementById('prev');   // previous button
+    const next = document.getElementById('next');   // next button
 
     const token = localStorage.getItem('token');
-    axios.get('http://localhost:4000/expenses/get-all',{headers:{"authorization":token}})
-    .then((expenses)=>{
-        //console.log(expenses);
-        const list = expenses.data;
-        
+    function expense(page_num){
+        axios.get('http://localhost:4000/expenses/get-all?page=0',{headers:{"authorization":token}})
+        .then((res)=>{
+            console.log(res);
+            const list = res.data.data;
+            adding_to_page(list);
+            prev.disabled=!res.data.prev;
+            next.disabled=!res.data.next;
+        })
+        .catch(err => console.log(err));
+    };
+    expense(0);
+
+    function adding_to_page(list){
+        expenses_parent.innerHTML ='';
+
         list.forEach(expense =>{
             const date = expense.createdAt.toString().slice(0,10);
             //console.log(date);
@@ -127,32 +160,64 @@ function display_daily_expenses(){
             </div>`
             expenses_parent.innerHTML += ele;
         })
+    }
+        
+    // when user click on expense element, that expense will be deleted 
+    expenses_parent.addEventListener('click', (event)=>{
 
-        // on mouse over the element then show the delete button at right position
-        expenses_parent.addEventListener('click', (event)=>{
+        //removing the element by click on delete button
+        if(event.target.id==='remove' && event.target.parentElement.parentElement){
+            const elementId = event.target.parentElement.id;
+            //console.log(elementId);
+            deleteExpense(elementId);
 
-           /* //adding delete btn dynamically by user
-            if( event.target.className === 'expense'){
-                //console.log('jani');
-                const ele =` <button type="button" class="remove">-</button>`
-                event.target.innerHTML+=ele;
-                setTimeout(()=>{
-                    event.target.removeChild(event.target.lastChild);
-                },2000)
-            }
-            //event.preventDefault();*/
-
-            //removing the element by click on delete button
-            if(event.target.id==='remove' && event.target.parentElement.parentElement){
-                const elementId = event.target.parentElement.id;
-                //console.log(elementId);
-                deleteExpense(elementId);
-
-                expenses_parent.removeChild(event.target.parentElement);
-            }
-        })
+            expenses_parent.removeChild(event.target.parentElement);
+        }
     })
-    .catch(err => console.log(err));
+
+    // when the use clicked on next or previous buttons, pages will be changed
+
+    // listening the next and previous btn action from pagination div block
+    document.getElementById('pagination').addEventListener('click',(e)=>{
+
+        //console.log(curr_page-1)
+        
+        // if user click prev btn, the previous page will be called from backend 
+        if(e.target.id ==='prev' && !prev.disabled  ){
+
+            const curr_page = Number(document.getElementById('curr_page').value);
+
+            // calling backend for previous page, if prev btn is active 
+            axios.get(`http://localhost:4000/expenses/get-all?page=${curr_page-1}`,{headers:{"authorization":token}})
+            .then((res)=>{
+                adding_to_page(res.data.data);
+                prev.disabled=!res.data.prev;
+                next.disabled=!res.data.next;
+
+                // updating the page number in hidden input tag
+                document.getElementById('curr_page').value =curr_page-1;
+            })
+            .catch(err => console.log(err));  
+
+        }
+
+        // if clicked on next button
+        if(e.target.id === 'next' && !next.disabled){
+
+            const curr_page = Number(document.getElementById('curr_page').value);
+
+            axios.get(`http://localhost:4000/expenses/get-all?page=${curr_page+1}`,{headers:{"authorization":token}})
+            .then((res)=>{
+                adding_to_page(res.data.data);
+                prev.disabled=!res.data.prev;
+                next.disabled=!res.data.next;
+
+                document.getElementById('curr_page').value =curr_page+1;
+            })
+            .catch(err => console.log(err));  
+        }
+    })
+    
 }
 
 // displaying the leadership board

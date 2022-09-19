@@ -193,13 +193,16 @@ img{
     margin: 0;
     padding: 0;
 }
-
-
-.income_container{
-    background-color: white;
-    width: 48%;
-    height: 20rem;
+.pagination{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1rem 0;
 }
+.pagination *{ 
+    margin: 0.5rem;
+}
+
 
 /* adding expenses */
 .adding_expenses.active{
