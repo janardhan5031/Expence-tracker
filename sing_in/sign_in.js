@@ -88,7 +88,7 @@ function displaycontent(){
             //daily expenses
             const expenses_main_container = document.getElementById('expenses_main_container').classList;
             const adding_expenses = document.getElementById('adding_expenses').classList;
-            const view_expenses = document.getElementById('view_all_expenses').classList;
+            const view_expenses = document.getElementById('view_all_expenses_container').classList;
 
             
             //console.log(event.target.id)
@@ -105,7 +105,7 @@ function displaycontent(){
                 display_leadership_board();
             }
             // activate expenses add expenses container and de-activate expenses main contaniner
-            if(event.target.id==='add_expense'){
+            else if(event.target.id==='add_expense'){
                 if(active_container){
                     active_container.remove('active');
                 }
@@ -115,7 +115,7 @@ function displaycontent(){
                 // for premioum users only, download button will be active
             }
             
-            if(event.target.id==='view_expenses'){
+            else if(event.target.id==='view_expenses'){
                 
                 if(active_container){
                     active_container.remove('active');
@@ -124,11 +124,64 @@ function displaycontent(){
                 view_expenses.add('active')
                 // disabling the downlod button for non-prime user
                 document.getElementById('download_btn').disabled = membership? false : true;
+                getAllPreviousFiles();
             }   
             
         })
     }
 }
+
+function getAllPreviousFiles(){
+    const token = localStorage.getItem('token');
+    axios.get(`http://localhost:4000/files/getAllFiles`,{headers:{"authorization":token}})
+    .then(result=>{
+        //console.log(result);
+
+        let list_of_files = document.getElementById('list_of_files');
+        list_of_files.innerHTML ='';
+
+        result.data.forEach(file =>{
+            const name=file.fileName;
+            //console.log(name)
+            let fileName;
+            let ptr=0;
+            while(ptr<name.length){
+                if(name[ptr]==='G' && name[ptr+1]==='M' && name[ptr+2]==='T'){
+                    fileName = name.slice(0,ptr);
+                    //console.log(fileName);
+                }
+                ptr++;
+            }
+
+            const ele = `<li>${fileName}<button type="button" id=${file.id} class="this_file_download">download </button></li>`;
+            list_of_files.innerHTML += ele;
+
+        })
+    })
+    .catch(err => console.log(err));
+}
+
+// download previous downloaded files
+document.getElementById('list_of_files').addEventListener('click',(event)=>{
+    event.preventDefault();
+    if(event.target.className==='this_file_download'){
+        const token = localStorage.getItem('token');
+        const fileId = event.target.id;
+        axios.get(`http://localhost:4000/files/getOneFile/${fileId}`,{headers:{"authorization":token}})
+        .then(result =>{    
+            //console.log(result);
+            if(result.status === 200){
+                var a = document.createElement('a');
+                a.href = result.data.url;
+                
+                a.click();
+            }else{
+                throw new Error('something went wrong');
+            }
+        })
+        .catch(err => console.log(err))
+    }
+})
 
 // downoading all expenses by clicking on download btn
 document.getElementById('download_btn').addEventListener('click',()=>{
@@ -138,7 +191,7 @@ document.getElementById('download_btn').addEventListener('click',()=>{
         if(result.status === 200){
             var a = document.createElement('a');
             a.href = result.data.url;
-            a.download='expense.txt';
+            
             a.click();
         }else{
             throw new Error('something went wrong');

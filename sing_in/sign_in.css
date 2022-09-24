@@ -240,17 +240,30 @@ img{
     cursor: pointer;
 }
 
+
+
 /* view all expenses */
-.view_all_expenses{
+.view_all_expenses_container{
     display: none;
+    width:100%;
+}
+.view_all_expenses_container.active{
+    display: flex;
+    flex-direction: column;
+}
+.files_container li{
+    margin: 1rem 2rem 1rem 0;
+}
+.files_container button{
+    margin: 0 2rem;
+}
+
+.view_all_expenses, .files_container{
     width: 96%;
     margin:2% ;
     background-color: white;
 }
-.view_all_expenses.active{
-    display: flex;
-    flex-direction: column;
-}
+
 #download_btn:disabled {
     cursor: none;
 }
@@ -299,4 +312,4 @@ th,td{
 }
 tr:nth-child(even) {
     background-color: #dddddd;
-  }
+}
