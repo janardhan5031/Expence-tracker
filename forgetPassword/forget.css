@@ -1,0 +1,36 @@
+
+body{
+    top: 0;bottom: 0;right: 0;left: 0;
+    margin: 0;
+    padding: 0;
+    background-color: white; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.forget_pswd_container{
+    position: relative;
+    top: 5rem;
+    box-shadow: 1px 1.5px 8px white;
+    background-color: rgba(0, 0, 0, 0.432);
+    border-radius: 2rem;
+    width: 50%;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 0;
+}
+.forget_pswd_container form{
+    margin-bottom: 2rem;
+}
+.email_container,.password_container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.sign_in_btn,.container1{
+    display: flex;
+    justify-content: center;
+}

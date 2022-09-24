@@ -17,7 +17,7 @@ sign_in.addEventListener('click', (e) =>{
         axios.post(`http://localhost:4000/sign-in`,obj)   // if we try to send the obj through get, we need to stringify that obj. then only we can parse that object and use it.
         .then(result =>{
             if(result.data.msg && result.status ===201){
-                console.log(result);
+                //console.log(result);
                 window.alert(result.data.msg);
                 // store the token in the local storage for further refences
                 localStorage.setItem('token',result.data.token);
@@ -49,18 +49,19 @@ function displaycontent(){
 
     // sign in action to get token to enter into their profile
     if(!token){
+        window.alert('sorry your are not login. pls login')
         profile_container.classList.add('active')// remove this container
         sign_in_container.classList.add('active');
         // user clicked on forget password, deactivate -sign in  & activate forget password containers
         const forget_pswd = document.getElementById('signIn_frgt_btn');
         forget_pswd.addEventListener('click',(e)=>{
-            console.log(forget_pswd)
+            //console.log(forget_pswd)
             e.preventDefault();
 
             // de-activate sign in container
             sign_in_container.classList.remove('active');
             //activate forget-password container
-            console.log(document.getElementById('forget_pswd_container'))
+            //console.log(document.getElementById('forget_pswd_container'))
             document.getElementById('forget_pswd_container').classList.add('active');
             forgetPassword();
         })
@@ -81,34 +82,70 @@ function displaycontent(){
 
         const expense_track_hdr = document.getElementById('expense_tracker');
 
+        let active_container;
         expense_track_hdr.addEventListener('click',(event)=>{
 
             //daily expenses
             const expenses_main_container = document.getElementById('expenses_main_container').classList;
             const adding_expenses = document.getElementById('adding_expenses').classList;
+            const view_expenses = document.getElementById('view_all_expenses').classList;
 
+            
             //console.log(event.target.id)
-            // activate expenses main container and de-activate add expenses contaniner
+            // activate expenses main container and de-activate add active contaniner if it exists
             if(event.target.id === 'daily_btn'){
                 expenses_main_container.add('active');
                 
-                if(adding_expenses.contains('active')){
-                    adding_expenses.remove('active');
+                if(active_container){
+                    active_container.remove('active');
+                    // storing the current active container after de-activate previous active container
                 }
+                active_container=expenses_main_container;
                 display_daily_expenses();
                 display_leadership_board();
             }
             // activate expenses add expenses container and de-activate expenses main contaniner
-            else if(event.target.id==='add_expense'){
-                if(expenses_main_container.contains('active')){
-                    expenses_main_container.remove('active');
+            if(event.target.id==='add_expense'){
+                if(active_container){
+                    active_container.remove('active');
                 }
+                active_container=adding_expenses;
                 adding_expenses.add('active');
+                
+                // for premioum users only, download button will be active
             }
+            
+            if(event.target.id==='view_expenses'){
+                
+                if(active_container){
+                    active_container.remove('active');
+                }
+                active_container=view_expenses;
+                view_expenses.add('active')
+                // disabling the downlod button for non-prime user
+                document.getElementById('download_btn').disabled = membership? false : true;
+            }   
             
         })
     }
 }
+
+// downoading all expenses by clicking on download btn
+document.getElementById('download_btn').addEventListener('click',()=>{
+    const token = localStorage.getItem('token');
+    axios.get(`http://localhost:4000/expenses/download`,{headers:{"authorization":token}})
+    .then(result =>{    
+        if(result.status === 200){
+            var a = document.createElement('a');
+            a.href = result.data.url;
+            a.download='expense.txt';
+            a.click();
+        }else{
+            throw new Error('something went wrong');
+        }
+    })
+    .catch(err => console.log(err))
+})
 
 // forget password fucntion
 function forgetPassword(){
@@ -117,13 +154,17 @@ function forgetPassword(){
         const email = document.getElementById('rcvry_email').value;
         axios.post('http://localhost:4000/password/forgetpassword',{email:email})
         .then((result)=>{
-            console.log('forget clicked')
             console.log(result)
+            window.alert(result.data.msg);
+            if(result.data.resetUrl){
+                window.location.href=result.data.resetUrl;
+            }
         })
         .catch(err => console.log(err));
     })
 }
 
+// displaying the daily expenses handler
 function display_daily_expenses(){
     // get all the expense events stored in database
     const expenses_parent =document.getElementById('expenses_container');
@@ -132,10 +173,11 @@ function display_daily_expenses(){
     const next = document.getElementById('next');   // next button
 
     const token = localStorage.getItem('token');
+
     function expense(page_num){
         axios.get('http://localhost:4000/expenses/get-all?page=0',{headers:{"authorization":token}})
         .then((res)=>{
-            console.log(res);
+            //console.log(res);
             const list = res.data.data;
             adding_to_page(list);
             prev.disabled=!res.data.prev;
@@ -220,7 +262,7 @@ function display_daily_expenses(){
     
 }
 
-// displaying the leadership board
+// displaying the leadership board handler
 function display_leadership_board(){
     const leadership_container = document.getElementById('leadership_container');
     leadership_container.innerHTML='';
@@ -281,7 +323,7 @@ all_users.addEventListener('click',(event)=>{
 })
 
 
-// adding expenses
+// adding expenses through the form
 document.getElementById('add_expenses_btn').addEventListener('click',(e)=>{
     e.preventDefault();
    
@@ -309,14 +351,13 @@ async function deleteExpense(id){
     await axios.post(`http://localhost:4000/expenses/delete`,{id:id},{headers:{"authorization":token} })
     .then(result=>{
         //console.log(result);
+        window.alert('successfully deleted the expense')
     })
     .catch(err => console.log(err));
 }
 
 
-
-
-// paying the money
+// paying the money to get premium membership
 document.getElementById('pay_btn').onclick = async function(e){
     e.preventDefault();
 
